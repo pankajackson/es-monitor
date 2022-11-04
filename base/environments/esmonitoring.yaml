@@ -1,0 +1,24 @@
+---
+environments:
+  esmonitoring:
+    values:
+    - helmDefaults:
+      - tillerless: true
+      - cleanupOnFail: true
+      - createNamespace: true
+      - recreatePods: true
+      - historyMax: 20
+      - devel: true
+      - debug: true
+      - log-level: log
+      - timeout: 60
+    - apps:
+        prometheus_ns:
+          enabled: true
+          version: 0.1.0
+        grafana_ns:
+          enabled: true
+          version: 0.1.0
+        es_exporter:
+          enabled: true
+          version: 0.1.0

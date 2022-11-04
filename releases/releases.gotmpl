@@ -1,0 +1,51 @@
+---
+bases:
+  - "../base/repositories/{{ .Environment.Name }}.yaml"
+  - "../base/environments/{{ .Environment.Name }}.yaml"
+
+---
+releases:
+{{- if hasKey .Environment.Values.apps "prometheus_ns" }}
+  - name: "prometheus-ns"
+    namespace: {{ .Environment.Name }}
+    installed: {{ .Environment.Values.apps.prometheus_ns.enabled }}
+    labels:
+      chart: "prometheus-ns"
+      repo: "local"
+      role: "monitoring"
+    chart: "charts/prometheus-ns"
+    values:
+    - "values/prometheus-ns/values-{{ .Environment.Name }}.yaml"
+    version: {{ .Environment.Values.apps.prometheus_ns.version }}
+    wait: false
+{{- end }}
+
+{{- if hasKey .Environment.Values.apps "grafana_ns" }}
+  - name: "grafana-ns"
+    namespace: {{ .Environment.Name }}
+    installed: {{ .Environment.Values.apps.grafana_ns.enabled }}
+    labels:
+      chart: "grafana-ns"
+      repo: "local"
+      role: "monitoring"
+    chart: "charts/grafana-ns"
+    values:
+    - "values/grafana-ns/values-{{ .Environment.Name }}.yaml"
+    version: {{ .Environment.Values.apps.grafana_ns.version }}
+    wait: false
+{{- end }}
+
+{{- if hasKey .Environment.Values.apps "es_exporter" }}
+  - name: "es-exporter"
+    namespace: {{ .Environment.Name }}
+    installed: {{ .Environment.Values.apps.es_exporter.enabled }}
+    labels:
+      chart: "es-exporter"
+      repo: "local"
+      role: "monitoring"
+    chart: "charts/es-exporter"
+    values:
+    - "values/es-exporter/values-{{ .Environment.Name }}.yaml"
+    version: {{ .Environment.Values.apps.es_exporter.version }}
+    wait: false
+{{- end }}

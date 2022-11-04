@@ -1,0 +1,7 @@
+---
+bases:
+  - "base/repositories/esmonitoring.yaml"
+  - "base/environments/esmonitoring.yaml"
+
+helmfiles:
+  - "releases/releases.gotmpl"
