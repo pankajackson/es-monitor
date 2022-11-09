@@ -43,7 +43,7 @@ data:
     scrape_configs:
       {{- $Clusters := .Values.es_clusters }}
       {{- range $i, $es := $Clusters}}
-      - job_name: {{ lower $es.name }}
+      - job_name: {{ lower $es.name }}-exporter
         static_configs:
           - targets: ['{{ include "es-monitor.fullname" $ }}-exporter-{{ lower $es.name }}:9114']
       {{- end }}
