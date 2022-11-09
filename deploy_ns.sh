@@ -1,0 +1,1 @@
+helmfile.exe -e esmonitoring template | kubectl.exe apply -f -

@@ -1,0 +1,147 @@
+# Default values for es-monitor.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+es_clusters:
+  - name: local
+    url: https://es.jackson.com
+    username: elastic
+    password: "L436edHEi5955bbN9a1k8vNs"
+    skipSsl: true
+  - name: evega
+    url: https://es.evega.co.in
+    username: elastic
+    password: "L436edHEi5955bbN9a1k8vNs"
+    skipSsl: false
+  - name: evega-prod
+    url: https://es.evega.co.in
+    username: elastic
+    password: "L436edHEi5955bbN9a1k8vNs"
+    skipSsl: false
+exporter:
+  replicaCount: 1
+  nameOverride: ""
+  fullnameOverride: ""
+  image:
+    repository: prometheuscommunity/elasticsearch-exporter
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "latest"
+  imagePullSecrets: []
+  podAnnotations: {}
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsGroup: 10000
+    runAsUser: 10000
+    fsGroup: 10000
+  securityContext:
+    capabilities:
+      drop:
+        - SETPCAP
+        - MKNOD
+        - AUDIT_WRITE
+        - CHOWN
+        - NET_RAW
+        - DAC_OVERRIDE
+        - FOWNER
+        - FSETID
+        - KILL
+        - SETGID
+        - SETUID
+        - NET_BIND_SERVICE
+        - SYS_CHROOT
+        - SETFCAP
+    readOnlyRootFilesystem: true
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: { }
+  service:
+    type: ClusterIP
+    port: 9114
+  ingress:
+    enabled: false
+    className: ""
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: chart-example.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls: []
+prometheus:
+  replicaCount: 1
+  nameOverride: ""
+  fullnameOverride: ""
+  image:
+    repository: prom/prometheus
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "latest"
+  imagePullSecrets: []
+  podAnnotations: {}
+  podSecurityContext: {}
+  securityContext: {}
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: { }
+  service:
+    type: ClusterIP
+    port: 80
+  ingress:
+    enabled: false
+    className: ""
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: chart-example.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls: []
+grafana:
+  replicaCount: 1
+  nameOverride: ""
+  fullnameOverride: ""
+  image:
+    repository: grafana/grafana
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "latest"
+  imagePullSecrets: []
+  podAnnotations: {}
+  podSecurityContext: {}
+  securityContext: {}
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: { }
+  service:
+    type: LoadBalancer
+    port: 80
+  ingress:
+    enabled: false
+    className: ""
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: chart-example.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls: []
+
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: false
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""

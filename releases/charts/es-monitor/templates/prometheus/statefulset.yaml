@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "es-monitor.fullname" . }}-prometheus
+  labels:
+    app: prometheus
+    {{- include "es-monitor.labels" . | nindent 4 }}
+spec:
+  serviceName: {{ include "es-monitor.fullname" . }}-grafana
+  replicas: {{ .Values.prometheus.replicaCount }}
+  selector:
+    matchLabels:
+      app: prometheus
+      {{- include "es-monitor.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/prometheus/configmap.yaml") . | sha256sum }}
+      {{- with .Values.prometheus.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        app: prometheus
+        {{- include "es-monitor.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.prometheus.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "es-monitor.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.prometheus.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}-prometheus
+          securityContext:
+            {{- toYaml .Values.prometheus.securityContext | nindent 12 }}
+          image: "{{ .Values.prometheus.image.repository }}:{{ .Values.prometheus.image.tag | default .Chart.AppVersion }}"
+          args:
+            - "--config.file=/etc/prometheus/prometheus.yml"
+            - "--storage.tsdb.path=/prometheus/"
+          imagePullPolicy: {{ .Values.prometheus.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 9090
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {{- toYaml .Values.prometheus.resources | nindent 12 }}
+          volumeMounts:
+            - name: {{ include "es-monitor.fullname" . }}-prometheus-server-conf
+              mountPath: /etc/prometheus/
+            - name: {{ include "es-monitor.fullname" . }}-prometheus-volume
+              mountPath: /prometheus/
+      volumes:
+        - name: {{ include "es-monitor.fullname" . }}-prometheus-server-conf
+          configMap:
+            defaultMode: 420
+            name: {{ include "es-monitor.fullname" . }}-prometheus-server-conf
+        - name: {{ include "es-monitor.fullname" . }}-prometheus-volume
+          emptyDir: {}
+      {{- with .Values.prometheus.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.prometheus.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.prometheus.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "es-monitor.fullname" . }}-grafana
+  labels:
+    app: grafana
+    {{- include "es-monitor.labels" . | nindent 4 }}
+spec:
+  serviceName: {{ include "es-monitor.fullname" . }}-grafana
+  replicas: {{ .Values.grafana.replicaCount }}
+  selector:
+    matchLabels:
+      app: grafana
+      {{- include "es-monitor.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/grafana/configmap.yaml") . | sha256sum }}
+      {{- with .Values.grafana.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        app: grafana
+        {{- include "es-monitor.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.grafana.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "es-monitor.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.grafana.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}-grafana
+          securityContext:
+            {{- toYaml .Values.grafana.securityContext | nindent 12 }}
+          image: "{{ .Values.grafana.image.repository }}:{{ .Values.grafana.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.grafana.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {{- toYaml .Values.grafana.resources | nindent 12 }}
+          volumeMounts:
+            - mountPath: /var/lib/grafana
+              name: {{ include "es-monitor.fullname" . }}-grafana-storage
+            - mountPath: /etc/grafana/provisioning/datasources
+              name: {{ include "es-monitor.fullname" . }}-grafana-datasources
+              readOnly: false
+      volumes:
+        - name: {{ include "es-monitor.fullname" . }}-grafana-storage
+          emptyDir: {}
+        - name: {{ include "es-monitor.fullname" . }}-grafana-datasources
+          configMap:
+              defaultMode: 420
+              name: {{ include "es-monitor.fullname" . }}-grafana-datasources
+      {{- with .Values.grafana.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.grafana.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.grafana.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

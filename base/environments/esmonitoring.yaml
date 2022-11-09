@@ -13,12 +13,6 @@ environments:
       - log-level: log
       - timeout: 60
     - apps:
-        prometheus_ns:
-          enabled: true
-          version: 0.1.0
-        grafana_ns:
-          enabled: true
-          version: 0.1.0
-        es_exporter:
+        es_monitor:
           enabled: true
           version: 0.1.0
