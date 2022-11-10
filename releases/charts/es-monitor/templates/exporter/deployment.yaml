@@ -59,7 +59,8 @@ spec:
             - --es.shards
             - --es.snapshots
             - --es.cluster_settings
-            - --es.timeout=30s
+            - --es.clusterinfo.interval={{ $es.interval | default "5s" }}
+            - --es.timeout={{ $es.timeout | default "5s" }}
             {{- if $es.skipSsl }}
             - --es.ssl-skip-verify
             {{- end }}

@@ -44,6 +44,8 @@ data:
       {{- $Clusters := .Values.es_clusters }}
       {{- range $i, $es := $Clusters}}
       - job_name: {{ lower $es.name }}-exporter
+        scrape_interval: {{ $es.interval | default "5s" }}
+        scrape_timeout: {{ $es.timeout | default "5s" }}
         static_configs:
           - targets: ['{{ include "es-monitor.fullname" $ }}-exporter-{{ lower $es.name }}:9114']
       {{- end }}

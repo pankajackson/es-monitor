@@ -8,16 +8,19 @@ es_clusters:
     username: elastic
     password: "L436edHEi5955bbN9a1k8vNs"
     skipSsl: true
+    interval: 2m
+    timeout: 2m
   - name: evega
     url: https://es.evega.co.in
     username: elastic
     password: "L436edHEi5955bbN9a1k8vNs"
-    skipSsl: false
   - name: evega-prod
     url: https://es.evega.co.in
     username: elastic
     password: "L436edHEi5955bbN9a1k8vNs"
     skipSsl: false
+    interval: 30s
+    timeout: 30s
 exporter:
   replicaCount: 1
   nameOverride: ""
