@@ -7,7 +7,7 @@ metadata:
     {{- include "es-monitor.labels" . | nindent 4 }}
 spec:
   serviceName: {{ include "es-monitor.fullname" . }}-grafana
-  replicas: {{ .Values.grafana.replicaCount }}
+  replicas: {{ .Values.prometheus.grafana.replicaCount }}
   selector:
     matchLabels:
       app: grafana
@@ -16,26 +16,26 @@ spec:
     metadata:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/grafana/configmap.yaml") . | sha256sum }}
-      {{- with .Values.grafana.podAnnotations }}
+      {{- with .Values.prometheus.grafana.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
         app: grafana
         {{- include "es-monitor.selectorLabels" . | nindent 8 }}
     spec:
-      {{- with .Values.grafana.imagePullSecrets }}
+      {{- with .Values.prometheus.grafana.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "es-monitor.serviceAccountName" . }}
       securityContext:
-        {{- toYaml .Values.grafana.podSecurityContext | nindent 8 }}
+        {{- toYaml .Values.prometheus.grafana.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}-grafana
           securityContext:
-            {{- toYaml .Values.grafana.securityContext | nindent 12 }}
-          image: "{{ .Values.grafana.image.repository }}:{{ .Values.grafana.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.grafana.image.pullPolicy }}
+            {{- toYaml .Values.prometheus.grafana.securityContext | nindent 12 }}
+          image: "{{ .Values.prometheus.grafana.image.repository }}:{{ .Values.prometheus.grafana.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.prometheus.grafana.image.pullPolicy }}
           ports:
             - name: http
               containerPort: 3000
@@ -49,7 +49,7 @@ spec:
               path: /
               port: http
           resources:
-            {{- toYaml .Values.grafana.resources | nindent 12 }}
+            {{- toYaml .Values.prometheus.grafana.resources | nindent 12 }}
           volumeMounts:
             - mountPath: /var/lib/grafana
               name: {{ include "es-monitor.fullname" . }}-grafana-storage
@@ -63,15 +63,15 @@ spec:
           configMap:
               defaultMode: 420
               name: {{ include "es-monitor.fullname" . }}-grafana-datasources
-      {{- with .Values.grafana.nodeSelector }}
+      {{- with .Values.prometheus.grafana.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.grafana.affinity }}
+      {{- with .Values.prometheus.grafana.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.grafana.tolerations }}
+      {{- with .Values.prometheus.grafana.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}

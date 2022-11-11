@@ -6,9 +6,9 @@ metadata:
     app: grafana
     {{- include "es-monitor.labels" . | nindent 4 }}
 spec:
-  type: {{ .Values.grafana.service.type }}
+  type: {{ .Values.prometheus.grafana.service.type }}
   ports:
-    - port: {{ .Values.grafana.service.port }}
+    - port: {{ .Values.prometheus.grafana.service.port }}
       targetPort: http
       protocol: TCP
       name: http
