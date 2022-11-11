@@ -3,18 +3,12 @@
 # Declare variables to be passed into your templates.
 
 es_clusters:
-  - name: local
+  - name: evega-local
     url: https://es.jackson.com
     username: elastic
     password: "L436edHEi5955bbN9a1k8vNs"
     skipSsl: true
-    interval: 2m
-    timeout: 2m
-  - name: evega
-    url: https://es.evega.co.in
-    username: elastic
-    password: "L436edHEi5955bbN9a1k8vNs"
-  - name: evega-prod
+  - name: evega-global
     url: https://es.evega.co.in
     username: elastic
     password: "L436edHEi5955bbN9a1k8vNs"
@@ -74,6 +68,31 @@ exporter:
           - path: /
             pathType: ImplementationSpecific
     tls: []
+metricbeat:
+  replicaCount: 1
+  nameOverride: ""
+  fullnameOverride: ""
+  image:
+    repository: docker.elastic.co/beats/metricbeat
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "7.17.7"
+  output:
+    elasticsearch:
+      host: https://es.jackson.com
+      port: 443
+      username: elastic
+      password: "L436edHEi5955bbN9a1k8vNs"
+      skipSsl: true
+  imagePullSecrets: []
+  podAnnotations: {}
+  podSecurityContext:
+    runAsUser: 0
+  securityContext: {}
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
 prometheus:
   replicaCount: 1
   nameOverride: ""

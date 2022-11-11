@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "es-monitor.fullname" . }}-metricbeat
+  labels:
+    app: metricbeat
+    {{- include "es-monitor.labels" . | nindent 4 }}
+spec:
+  serviceName: {{ include "es-monitor.fullname" . }}-metricbeat
+  replicas: {{ .Values.metricbeat.replicaCount }}
+  selector:
+    matchLabels:
+      app: metricbeat
+      {{- include "es-monitor.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/metricbeat/configmap.yaml") . | sha256sum }}
+      {{- with .Values.metricbeat.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        app: metricbeat
+        {{- include "es-monitor.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.metricbeat.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "es-monitor.serviceAccountName" . }}
+      terminationGracePeriodSeconds: 30
+      securityContext:
+        {{- toYaml .Values.metricbeat.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}-metricbeat
+          securityContext:
+            {{- toYaml .Values.metricbeat.securityContext | nindent 12 }}
+          image: "{{ .Values.metricbeat.image.repository }}:{{ .Values.metricbeat.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.metricbeat.image.pullPolicy }}
+          args: [
+            "-c", "/usr/share/metricbeat/metricbeat.yml",
+            "-e"
+          ]
+          resources:
+            {{- toYaml .Values.metricbeat.resources | nindent 12 }}
+          volumeMounts:
+          - name: {{ include "es-monitor.fullname" . }}-metricbeat-config
+            mountPath: /usr/share/metricbeat/metricbeat.yml
+            readOnly: true
+            subPath: metricbeat.yml
+          - name: {{ include "es-monitor.fullname" . }}-metricbeat-modules
+            mountPath: /usr/share/metricbeat/modules.d/
+            readOnly: true
+          - name: {{ include "es-monitor.fullname" . }}-metricbeat-storage
+            mountPath: /usr/share/metricbeat/data
+      volumes:
+        - name: {{ include "es-monitor.fullname" . }}-metricbeat-config
+          configMap:
+            defaultMode: 0640
+            name: {{ include "es-monitor.fullname" . }}-metricbeat-config
+        - name: {{ include "es-monitor.fullname" . }}-metricbeat-modules
+          configMap:
+            defaultMode: 0640
+            name: {{ include "es-monitor.fullname" . }}-metricbeat-modules
+        - name: {{ include "es-monitor.fullname" . }}-metricbeat-storage
+          emptyDir: {}
+      {{- with .Values.metricbeat.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.metricbeat.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.metricbeat.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
