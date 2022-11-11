@@ -1,3 +1,4 @@
+{{- if and .Values.prometheus.enabled .Values.prometheus.grafana.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -15,3 +16,4 @@ spec:
   selector:
     app: grafana
     {{- include "es-monitor.selectorLabels" . | nindent 4 }}
+{{- end }}

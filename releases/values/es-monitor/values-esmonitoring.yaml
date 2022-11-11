@@ -69,6 +69,7 @@ exporter:
             pathType: ImplementationSpecific
     tls: []
 metricbeat:
+  enabled: true
   replicaCount: 1
   nameOverride: ""
   fullnameOverride: ""
@@ -94,6 +95,7 @@ metricbeat:
   tolerations: []
   affinity: {}
 prometheus:
+  enabled: false
   replicaCount: 1
   nameOverride: ""
   fullnameOverride: ""
@@ -126,6 +128,7 @@ prometheus:
             pathType: ImplementationSpecific
     tls: []
   grafana:
+    enabled: true
     replicaCount: 1
     nameOverride: ""
     fullnameOverride: ""
