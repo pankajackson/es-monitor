@@ -13,14 +13,8 @@ data:
       reload.enabled: false
     processors:
       - add_cloud_metadata:
-    output.elasticsearch:
-      hosts: ["{{ .Values.metricbeat.output.elasticsearch.host | default "elasticsearch" }}:{{ .Values.metricbeat.output.elasticsearch.port | default "9200" }}"]
-      username: "{{ .Values.metricbeat.output.elasticsearch.username | default "elastic" }}"
-      password: "{{ .Values.metricbeat.output.elasticsearch.password | default "password" }}"
-      {{- if .Values.metricbeat.output.elasticsearch.skipSsl }}
-      ssl:
-        verification_mode: "none"
-      {{- end }}
+    output.logstash:
+      hosts: ["{{ include "es-monitor.fullname" . }}-logstash:5044"]
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -31,7 +25,7 @@ metadata:
     {{- include "es-monitor.labels" . | nindent 4 }}
 data:
   prometheus.yaml: |-
-    {{- $Clusters := .Values.es_clusters }}
+    {{- $Clusters := .Values.esClusters }}
     {{- range $i, $es := $Clusters}}
     - module: prometheus
       enabled: true

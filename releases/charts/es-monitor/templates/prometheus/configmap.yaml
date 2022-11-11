@@ -42,7 +42,7 @@ data:
     alerting:
       alertmanagers: []
     scrape_configs:
-      {{- $Clusters := .Values.es_clusters }}
+      {{- $Clusters := .Values.esClusters }}
       {{- range $i, $es := $Clusters}}
       - job_name: {{ lower $es.name }}-exporter
         scrape_interval: {{ $es.interval | default "5s" }}

@@ -1,0 +1,19 @@
+{{- if .Values.logstash.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "es-monitor.fullname" . }}-logstash
+  labels:
+    app: logstash
+    {{- include "es-monitor.labels" . | nindent 4 }}
+spec:
+  type: LoadBalancer
+  ports:
+    - name: beats
+      port: 5044
+      targetPort: 5044
+      protocol: TCP
+  selector:
+    app: logstash
+    {{- include "es-monitor.selectorLabels" . | nindent 4 }}
+{{- end }}

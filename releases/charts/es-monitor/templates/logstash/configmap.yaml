@@ -1,0 +1,37 @@
+{{- if .Values.logstash.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: logstash-pipeline
+data:
+  logstash.yml: |
+    http.host: 0.0.0.0
+    config.reload.automatic: true
+    pipeline.ecs_compatibility: disabled
+  pipelines.yml: |
+    - pipeline.id: prometheus
+      path.config: "/usr/share/logstash/pipeline/prometheus"
+      queue.type: persisted
+  prometheus.conf: |
+    input {
+      beats {
+          id => "beats"
+          port => 5044
+          add_field => [ "[client][agent]", "prometheus" ]
+      }
+    }
+    filter {
+      mutate {
+        gsub => ["message", "\\xE9", 'e']
+      }
+    }
+    output {
+      elasticsearch {
+        index => "%{[client][agent]}-%{+YYYY-MM-dd}"
+        hosts => ["{{ .Values.logstash.output.elasticsearch.host | default "elasticsearch" }}:{{ .Values.logstash.output.elasticsearch.port | default "9200" }}"]
+        user => "{{ .Values.logstash.output.elasticsearch.username | default "elastic" }}"
+        password => "{{ .Values.logstash.output.elasticsearch.password | default "password" }}"
+        ssl_certificate_verification => {{ .Values.logstash.output.elasticsearch.skipSsl | ternary "false" "true" }}
+      }
+    }
+{{- end }}

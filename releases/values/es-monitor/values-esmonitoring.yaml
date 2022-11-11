@@ -2,7 +2,7 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-es_clusters:
+esClusters:
   - name: evega-local
     url: https://es.jackson.com
     username: elastic
@@ -75,6 +75,25 @@ metricbeat:
   fullnameOverride: ""
   image:
     repository: docker.elastic.co/beats/metricbeat
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "7.17.7"
+  imagePullSecrets: []
+  podAnnotations: {}
+  podSecurityContext:
+    runAsUser: 0
+  securityContext: {}
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+logstash:
+  enabled: true
+  replicaCount: 1
+  nameOverride: ""
+  fullnameOverride: ""
+  image:
+    repository: docker.elastic.co/logstash/logstash
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
     tag: "7.17.7"

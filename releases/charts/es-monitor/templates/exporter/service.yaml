@@ -1,5 +1,5 @@
 {{- $Values := .Values.exporter }}
-{{- $Clusters := .Values.es_clusters }}
+{{- $Clusters := .Values.esClusters }}
 {{- range $i, $es := $Clusters}}
 ---
 apiVersion: v1
