@@ -24,8 +24,19 @@ output:
     port: 443
     username: elastic
     password: "L436edHEi5955bbN9a1k8vNs"
-    index: "es-monitoring-%{+YYYY-MM-dd}"
     skipSsl: true
+indexMapper:
+  - indexPatterns:
+      - twitter-*
+      - es-monitoring-*
+    fields:
+      owner: "Pankaj"
+      project: "Development"
+  - indexPatterns:
+      - http-input-*
+    fields:
+      owner: "Pankaj"
+      project: "Web Ingested"
 exporter:
   replicaCount: 1
   nameOverride: ""

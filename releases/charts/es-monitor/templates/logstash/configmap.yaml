@@ -25,6 +25,24 @@ data:
         gsub => ["message", "\\xE9", 'e']
       }
     }
+    filter {
+    {{- if .Values.indexMapper }}
+    if [prometheus][labels][index] {
+      {{- range $i, $patterns := .Values.indexMapper }}
+      {{- if and $patterns.indexPatterns $patterns.fields }}
+      {{- range $i, $pattern := $patterns.indexPatterns }}
+      grok {
+        match => { '[prometheus][labels][index]' => "{{ $pattern | replace "*" "%{GREEDYDATA}" }}" }
+        {{- range $key, $val := $patterns.fields }}
+        add_field => [ '[prometheus][labels][{{ $key }}]', "{{ $val }}" ]
+        {{- end }}
+      }
+      {{- end }}
+      {{- end }}
+      {{- end }}
+    }
+    {{- end }} 
+    }
     output {
       elasticsearch {
         index => "{{ .Values.output.elasticsearch.index | default "%{[client][agent]}-%{+YYYY-MM-dd}" }}"

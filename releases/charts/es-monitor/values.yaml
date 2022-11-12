@@ -3,21 +3,41 @@
 # Declare variables to be passed into your templates.
 
 esClusters:
-  - name: local
+  - name: evega-local
     url: https://es.jackson.com
     username: elastic
     password: "L436edHEi5955bbN9a1k8vNs"
     skipSsl: true
-  - name: evega
+  - name: evega-global
     url: https://es.evega.co.in
     username: elastic
     password: "L436edHEi5955bbN9a1k8vNs"
     skipSsl: false
-  - name: evega-prod
-    url: https://es.evega.co.in
+    interval: 30s
+    timeout: 30s
+output:
+  prometheus:
+    enabled: false
+  elasticsearch:
+    enabled: true
+    host: https://es.jackson.com
+    port: 443
     username: elastic
     password: "L436edHEi5955bbN9a1k8vNs"
-    skipSsl: false
+    index: "%{[client][agent]}-%{+YYYY-MM-dd}"
+    skipSsl: true
+indexMapper:
+  - indexPatterns:
+      - twitter-*
+      - es-monitoring-*
+    fields:
+      owner: "Pankaj"
+      project: "Development"
+  - indexPatterns:
+      - http-input-*
+    fields:
+      owner: "Pankaj"
+      project: "Web Ingested"
 exporter:
   replicaCount: 1
   nameOverride: ""
@@ -71,6 +91,42 @@ exporter:
           - path: /
             pathType: ImplementationSpecific
     tls: []
+metricbeat:
+  replicaCount: 1
+  nameOverride: ""
+  fullnameOverride: ""
+  image:
+    repository: docker.elastic.co/beats/metricbeat
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "7.17.7"
+  imagePullSecrets: []
+  podAnnotations: {}
+  podSecurityContext:
+    runAsUser: 0
+  securityContext: {}
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+logstash:
+  replicaCount: 1
+  nameOverride: ""
+  fullnameOverride: ""
+  image:
+    repository: docker.elastic.co/logstash/logstash
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "7.17.7"
+  imagePullSecrets: []
+  podAnnotations: {}
+  podSecurityContext:
+    runAsUser: 0
+  securityContext: {}
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
 prometheus:
   replicaCount: 1
   nameOverride: ""
@@ -104,6 +160,7 @@ prometheus:
             pathType: ImplementationSpecific
     tls: []
 grafana:
+  enabled: true
   replicaCount: 1
   nameOverride: ""
   fullnameOverride: ""
@@ -135,7 +192,6 @@ grafana:
           - path: /
             pathType: ImplementationSpecific
     tls: []
-
 
 serviceAccount:
   # Specifies whether a service account should be created
