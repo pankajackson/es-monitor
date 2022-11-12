@@ -36,6 +36,7 @@ data:
         {{- range $key, $val := $patterns.fields }}
         add_field => [ '[prometheus][labels][{{ $key }}]', "{{ $val }}" ]
         {{- end }}
+        add_field => [ '[prometheus][labels][index_pattern]', "{{ $pattern }}" ]
       }
       {{- end }}
       {{- end }}
