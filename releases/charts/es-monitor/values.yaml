@@ -159,6 +159,7 @@ prometheus:
           - path: /
             pathType: ImplementationSpecific
     tls: []
+# Grafana needs output prometheus to be enabled
 grafana:
   enabled: true
   replicaCount: 1
