@@ -1,4 +1,4 @@
-{{- if .Values.logstash.enabled }}
+{{- if .Values.output.elasticsearch.enabled }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -27,11 +27,11 @@ data:
     }
     output {
       elasticsearch {
-        index => "%{[client][agent]}-%{+YYYY-MM-dd}"
-        hosts => ["{{ .Values.logstash.output.elasticsearch.host | default "elasticsearch" }}:{{ .Values.logstash.output.elasticsearch.port | default "9200" }}"]
-        user => "{{ .Values.logstash.output.elasticsearch.username | default "elastic" }}"
-        password => "{{ .Values.logstash.output.elasticsearch.password | default "password" }}"
-        ssl_certificate_verification => {{ .Values.logstash.output.elasticsearch.skipSsl | ternary "false" "true" }}
+        index => "{{ .Values.output.elasticsearch.index | default "%{[client][agent]}-%{+YYYY-MM-dd}" }}"
+        hosts => ["{{ .Values.output.elasticsearch.host | default "elasticsearch" }}:{{ .Values.output.elasticsearch.port | default "9200" }}"]
+        user => "{{ .Values.output.elasticsearch.username | default "elastic" }}"
+        password => "{{ .Values.output.elasticsearch.password | default "password" }}"
+        ssl_certificate_verification => {{ .Values.output.elasticsearch.skipSsl | ternary "false" "true" }}
       }
     }
 {{- end }}

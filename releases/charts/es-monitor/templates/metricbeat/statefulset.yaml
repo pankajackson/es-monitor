@@ -1,4 +1,4 @@
-{{- if .Values.metricbeat.enabled }}
+{{- if .Values.output.elasticsearch.enabled }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:

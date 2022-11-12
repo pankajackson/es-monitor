@@ -1,4 +1,4 @@
-{{- if .Values.prometheus.enabled }}
+{{- if .Values.output.prometheus.enabled }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
