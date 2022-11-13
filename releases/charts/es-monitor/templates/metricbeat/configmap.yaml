@@ -31,5 +31,6 @@ data:
       enabled: true
       hosts: ['{{ include "es-monitor.fullname" $ }}-exporter-{{ lower $es.name }}:9114']
       metrics_path: /metrics
+      period: {{ $es.interval | default "10s" }}
     {{- end }}
 {{- end }}
