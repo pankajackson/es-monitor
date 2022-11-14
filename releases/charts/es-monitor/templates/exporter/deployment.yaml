@@ -50,15 +50,13 @@ spec:
             - /bin/elasticsearch_exporter
             - --es.uri={{ $es.url }}
             # - --es.ca=/etc/certificates/ca.crt
-            - --es.all
             - --log.format=logfmt
             - --log.level=info
-            - --es.indices
-            - --es.indices_settings
-            - --es.indices_mappings
-            - --es.shards
-            - --es.snapshots
-            - --es.cluster_settings
+            {{- range $metric, $isEnabled := $Values.metrics}}
+            {{- if $isEnabled }}
+            - --es.{{ $metric }}
+            {{- end }}
+            {{- end }}
             - --es.clusterinfo.interval={{ $es.interval | default "5s" }}
             - --es.timeout={{ $es.timeout | default "5s" }}
             {{- if $es.skipSsl }}

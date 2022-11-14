@@ -25,9 +25,20 @@ output:
     username: elastic
     password: "L436edHEi5955bbN9a1k8vNs"
     skipSsl: true
+exporter:
+  metrics:
+    all: false
+    cluster_settings: false
+    indices: true
+    indices_settings: false
+    indices_mappings: false
+    aliases: false
+    shards: false
+    snapshots: false
+    slm: false
+    data_stream: false
 indexMapper:
   - indexPatterns:
-      - twitter-*
       - es-monitoring-*
     fields:
       owner: "Pankaj"
@@ -35,8 +46,18 @@ indexMapper:
   - indexPatterns:
       - http-input-*
     fields:
-      owner: "Pankaj"
+      owner: "Dips"
       project: "Web Ingested"
+  - indexPatterns:
+      - twitter-*
+    fields:
+      owner: "Dips"
+      project: "Development"
+  - indexPatterns:
+      - prometheus-*
+    fields:
+      owner: "Pankaj"
+      project: "Monitoring"
 grafana:
   enabled: false
   service:

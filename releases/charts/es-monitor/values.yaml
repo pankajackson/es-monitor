@@ -72,6 +72,17 @@ exporter:
         - SYS_CHROOT
         - SETFCAP
     readOnlyRootFilesystem: true
+  metrics:
+    all: true
+    cluster_settings: true
+    indices: true
+    indices_settings: true
+    indices_mappings: true
+    aliases: true
+    shards: true
+    snapshots: true
+    slm: true
+    data_stream: true
   resources: {}
   nodeSelector: {}
   tolerations: []
